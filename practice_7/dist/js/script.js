@@ -212,6 +212,7 @@ document.addEventListener('DOMContentLoaded', () => {
       modalElem.classList.add('modal_opened'); // Запрещаем странице прокручиваться по вертикали
 
       document.body.style.overflowY = 'hidden';
+      clearInterval(modalTimerId);
     }
   }; // Закрывает модальное окно
 
@@ -264,6 +265,18 @@ document.addEventListener('DOMContentLoaded', () => {
       }
     });
   }
+
+  const modalTimerId = setTimeout(openModal, 5000); // Обработчик прокрутки страницы
+
+  const windowScrollHandler = () => {
+    if (window.pageYOffset + document.documentElement.clientHeight >= document.documentElement.scrollHeight) {
+      openModal();
+      window.removeEventListener('scroll', windowScrollHandler);
+    }
+  }; // Устанавливаем обработчик на прокрутку страницы
+
+
+  window.addEventListener('scroll', windowScrollHandler);
 });
 
 /***/ })

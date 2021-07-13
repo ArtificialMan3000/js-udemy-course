@@ -97,6 +97,7 @@
  // Скрипт начнёт выполняться после полной загрузки контента
 
 document.addEventListener('DOMContentLoaded', () => {
+  // Табы
   // Заголовоки табов
   const tabheaderItemElems = document.querySelectorAll('.tabheader__item'),
         // Содержимое табов
@@ -136,7 +137,66 @@ document.addEventListener('DOMContentLoaded', () => {
         }
       });
     }
-  });
+  }); // Таймер
+
+  const deadline = '2021-07-13'; // Получает время оставшееся до endtime в виде объекта
+
+  const getTimeRemaining = endtime => {
+    // Время в милисекундах
+    const time = Date.parse(endtime) - Date.parse(new Date()); // Количество дней
+
+    const days = Math.floor(time / (1000 * 60 * 60 * 24)); // Количество часов
+
+    const hours = Math.floor(time / (1000 * 60 * 60) % 24); // Количество минут
+
+    const minutes = Math.floor(time / (1000 * 60) % 60); // Количество секунд
+
+    const seconds = Math.floor(time / 1000 % 60);
+    return {
+      total: time,
+      days,
+      hours,
+      minutes,
+      seconds
+    };
+  }; // Добавляет ноль к числу, если оно одноциферное
+
+
+  const setZero = num => {
+    num = Number(num);
+
+    if (num >= 0 && num < 10) {
+      return `0${num}`;
+    }
+
+    return num;
+  }; // Устанавливает время на таймере
+
+
+  const setClock = (selector, endtime) => {
+    const timer = document.querySelector(selector);
+    const days = timer.querySelector('#days');
+    const hours = timer.querySelector('#hours');
+    const minutes = timer.querySelector('#minutes');
+    const seconds = timer.querySelector('#seconds'); // Обновляет время
+
+    const updateClock = () => {
+      const time = getTimeRemaining(endtime);
+      days.innerHTML = setZero(time.days);
+      hours.innerHTML = setZero(time.hours);
+      minutes.innerHTML = setZero(time.minutes);
+      seconds.innerHTML = setZero(time.seconds);
+
+      if (time.total <= 0) {
+        clearInterval(timerIntervalId);
+      }
+    };
+
+    const timerIntervalId = setInterval(updateClock, 1000);
+    updateClock();
+  };
+
+  setClock('.timer', deadline);
 });
 
 /***/ })

@@ -278,12 +278,14 @@ document.addEventListener('DOMContentLoaded', () => {
   window.addEventListener('scroll', windowScrollHandler); // Используем классы для создания карточек меню
 
   class MenuCard {
-    constructor(imgSrc, imgAlt, title, description, price) {
+    constructor(imgSrc, imgAlt, title, description, price, ...classes) {
       this.imgSrc = imgSrc;
       this.imgAlt = imgAlt;
       this.title = title;
       this.description = description;
-      this.price = price; // Курс гривны к доллару
+      this.price = price;
+      this.classes = classes;
+      this.defaultClassName = 'menu__item'; // Курс гривны к доллару
 
       this.transfer = 27; // Конвертируем
 
@@ -298,7 +300,14 @@ document.addEventListener('DOMContentLoaded', () => {
 
     createCardElem() {
       const cardElem = document.createElement('div');
-      cardElem.classList.add('menu__item'); // const cardElem = document.createElement('div');
+
+      if (this.classes.length === 0) {
+        cardElem.classList.add(this.defaultClassName);
+      } else {
+        this.classes.forEach(className => {
+          cardElem.classList.add(className);
+        });
+      }
 
       cardElem.innerHTML = `<img>
                 <h3 class="menu__item-subtitle"></h3>

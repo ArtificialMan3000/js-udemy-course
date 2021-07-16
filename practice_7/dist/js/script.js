@@ -332,10 +332,8 @@ document.addEventListener('DOMContentLoaded', () => {
 
     fillCard() {
       if (this.cardElem) {
-        console.dir(this.cardElem);
         document.body.append(this.cardElem);
         const imgElem = this.cardElem.querySelector('img');
-        console.log(imgElem);
         const titleElem = this.cardElem.querySelector('.menu__item-subtitle');
         const descrElem = this.cardElem.querySelector('.menu__item-descr');
         const priceNumberElem = this.cardElem.querySelector('.menu__item-total > span');
@@ -391,7 +389,47 @@ document.addEventListener('DOMContentLoaded', () => {
     menuCard.fillCard();
     menuCard.insertCard(menuCardsFragment);
   });
-  menuFieldContainerElem.append(menuCardsFragment);
+  menuFieldContainerElem.append(menuCardsFragment); // Формы
+
+  const forms = document.querySelectorAll('form');
+  const MESSAGES = {
+    loading: 'Загрузка',
+    success: 'Спасибо! Мы скоро с Вами свяжемся',
+    error: 'Что-то пошло не так...'
+  };
+
+  const postData = form => {
+    form.addEventListener('submit', evt => {
+      evt.preventDefault();
+      const statusMessage = document.createElement('div');
+      statusMessage.classList.add('status');
+      statusMessage.textContent = MESSAGES.loading;
+      form.append(statusMessage);
+      const request = new XMLHttpRequest();
+      request.open('POST', 'server.php');
+      request.setRequestHeader('Content-type', 'application/json');
+      let formData = new FormData(form);
+      formData = Array.from(formData);
+      const json = JSON.stringify(formData);
+      request.send(json);
+      request.addEventListener('load', () => {
+        if (request.status === 200) {
+          console.log(request.response);
+          statusMessage.textContent = MESSAGES.success;
+          form.reset();
+          setTimeout(() => {
+            statusMessage.textContent = '';
+          }, 2000);
+        } else {
+          statusMessage.textContent = MESSAGES.error;
+        }
+      });
+    });
+  };
+
+  forms.forEach(form => {
+    postData(form);
+  });
 });
 
 /***/ })

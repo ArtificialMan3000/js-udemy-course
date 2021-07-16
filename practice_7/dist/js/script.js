@@ -201,9 +201,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
   const modalElem = document.querySelector('.modal'); // Элемент диалоговой части модального окна
 
-  const modalDialogElem = document.querySelector('.modal__dialog'); // Кнопки закрытия модального окна
-
-  const modalCloseElems = document.querySelectorAll('[data-close]'); // Кнопки вызова модального окна
+  const modalDialogElem = document.querySelector('.modal__dialog'); // Кнопки вызова модального окна
 
   const modalCallElems = document.querySelectorAll('[data-modal'); // Открывает модальное окно
 
@@ -211,7 +209,8 @@ document.addEventListener('DOMContentLoaded', () => {
     if (modalElem) {
       modalElem.classList.add('modal_opened'); // Запрещаем странице прокручиваться по вертикали
 
-      document.body.style.overflowY = 'hidden'; // clearInterval(modalTimerId);
+      document.body.style.overflowY = 'hidden';
+      clearInterval(modalTimerId);
     }
   }; // Закрывает модальное окно
 
@@ -233,24 +232,13 @@ document.addEventListener('DOMContentLoaded', () => {
         openModal();
       });
     });
-  } // Устанавливаем обработчики на кнопки закрытия модального окна
-
-
-  if (modalCloseElems) {
-    modalCloseElems.forEach(modalCloseElem => {
-      modalCloseElem.addEventListener('click', evt => {
-        evt.preventDefault(); // Закрываем окно
-
-        closeModal();
-      });
-    });
   } // Устанавливаем обработчик на клик вне модального окна
 
 
   if (modalElem && modalDialogElem) {
     modalElem.addEventListener('click', evt => {
       // Закрываем окно, если клик был вне диалоговой части
-      if (!evt.target.closest('.modal__dialog')) {
+      if (!evt.target.closest('.modal__dialog') || evt.target.getAttribute('data-close') === '') {
         closeModal();
       }
     });
@@ -263,9 +251,9 @@ document.addEventListener('DOMContentLoaded', () => {
         closeModal();
       }
     });
-  } // const modalTimerId = setTimeout(openModal, 5000);
-  // Обработчик прокрутки страницы
+  }
 
+  const modalTimerId = setTimeout(openModal, 50000); // Обработчик прокрутки страницы
 
   const windowScrollHandler = () => {
     if (window.pageYOffset + document.documentElement.clientHeight >= document.documentElement.scrollHeight) {
@@ -393,18 +381,43 @@ document.addEventListener('DOMContentLoaded', () => {
 
   const forms = document.querySelectorAll('form');
   const MESSAGES = {
-    loading: 'Загрузка',
+    loading: 'img/form/spinner.svg',
     success: 'Спасибо! Мы скоро с Вами свяжемся',
     error: 'Что-то пошло не так...'
-  };
+  }; // Показывает сообщение о результате отправки формы
+
+  const showThanksModal = message => {
+    const modalElem = document.querySelector('.modal');
+    const prevModalDialogElem = document.querySelector('.modal__dialog');
+    prevModalDialogElem.classList.add('hide');
+    openModal();
+    const thanksModal = document.createElement('div');
+    thanksModal.classList.add('modal__dialog');
+    thanksModal.innerHTML = `
+            <div class="modal__content">
+                <div data-close class="modal__close">&times;</div>
+                <div class="modal__title">${message}</div>
+            </div>
+        `;
+    modalElem.append(thanksModal);
+    setTimeout(() => {
+      thanksModal.remove();
+      prevModalDialogElem.classList.remove('hide');
+      closeModal();
+    }, 4000);
+  }; // Отправляет форму на сервер
+
 
   const postData = form => {
     form.addEventListener('submit', evt => {
       evt.preventDefault();
-      const statusMessage = document.createElement('div');
-      statusMessage.classList.add('status');
-      statusMessage.textContent = MESSAGES.loading;
-      form.append(statusMessage);
+      const statusMessage = document.createElement('img');
+      statusMessage.src = MESSAGES.loading;
+      statusMessage.style.cssText = `
+                display: block;
+                margin: 0 auto;
+            `;
+      form.insertAdjacentElement('afterend', statusMessage);
       const request = new XMLHttpRequest();
       request.open('POST', 'server.php');
       request.setRequestHeader('Content-type', 'application/json');
@@ -415,13 +428,12 @@ document.addEventListener('DOMContentLoaded', () => {
       request.addEventListener('load', () => {
         if (request.status === 200) {
           console.log(request.response);
-          statusMessage.textContent = MESSAGES.success;
+          showThanksModal(MESSAGES.success);
           form.reset();
-          setTimeout(() => {
-            statusMessage.textContent = '';
-          }, 2000);
+          statusMessage.src = '';
         } else {
-          statusMessage.textContent = MESSAGES.error;
+          showThanksModal(MESSAGES.error);
+          statusMessage.src = '';
         }
       });
     });

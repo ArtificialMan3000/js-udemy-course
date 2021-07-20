@@ -197,6 +197,10 @@ document.addEventListener('DOMContentLoaded', () => {
             this.transfer = 27;
             // Конвертируем
             this.changeToUAH();
+            // Создаём карточку
+            this.createCardElem();
+            // Наполняем карточку данными
+            this.fillCard();
         }
 
         // Конвертирует доллары в гривны
@@ -226,15 +230,6 @@ document.addEventListener('DOMContentLoaded', () => {
             this.cardElem = cardElem;
         }
 
-        // Вставляет карточку меню в указанный элемент
-        insertCard (elem) {
-            if (this.cardElem) {
-                elem.append(this.cardElem);
-            } else {
-                throw new Error ('Карточки меню не существует');
-            }
-        }
-
         // Наполняет карточку данными
         fillCard () {
             if (this.cardElem) {
@@ -252,55 +247,38 @@ document.addEventListener('DOMContentLoaded', () => {
                 throw new Error ('Карточки меню не существует');
             }
         }
+
+        // Вставляет карточку меню в указанный элемент
+        insertCard (elem) {
+            if (this.cardElem) {
+                elem.append(this.cardElem);
+            } else {
+                throw new Error ('Карточки меню не существует');
+            }
+        }
     }
 
-    // База данных карточек меню
-    const menuCardsData = [
-        {
-            imgSrc: 'img/tabs/vegy.jpg',
-            imgAlt: 'vegy',
-            title: 'Меню "Фитнес"',
-            description: `Меню "Фитнес" - это новый подход к приготовлению блюд: больше свежих овощей и фруктов.
-                Продукт активных и здоровых людей.
-                Это абсолютно новый продукт с оптимальной ценой и высоким качеством!`,
-            price: '9'
-        },
-        {
-            imgSrc: 'img/tabs/elite.jpg',
-            imgAlt: 'elite',
-            title: 'Меню “Премиум”',
-            description: `В меню “Премиум” мы используем не только красивый дизайн упаковки,
-                но и качественное исполнение блюд.
-                Красная рыба, морепродукты, фрукты - ресторанное меню без похода в ресторан!`,
-            price: '20'
-        },
-        {
-            imgSrc: 'img/tabs/post.jpg',
-            imgAlt: 'post',
-            title: 'Меню "Постное"',
-            description: `Меню “Постное” - это тщательный подбор ингредиентов:
-                полное отсутствие продуктов животного происхождения, молоко из миндаля, овса, кокоса или гречки,
-                правильное количество белков за счет тофу и импортных вегетарианских стейков.`,
-            price: '16'
-        },
-    ];
+    // Запрашивает данные с сервера
+    const getResources = async (url) => {
+        const res = await fetch(url);
+
+        if (!res.ok) {
+            throw new Error(`Could not fetch ${url}, status ${res.status}`);
+        }
+
+        return await res.json();
+    };
 
     // Контейнер карточек меню
     const menuFieldContainerElem = document.querySelector('.menu__field > .container');
     const menuCardsFragment = document.createDocumentFragment();
-    menuCardsData.forEach((menuCardData) => {
-        const imgSrc = menuCardData.imgSrc;
-        const imgAlt = menuCardData.imgAlt;
-        const title = menuCardData.title;
-        const description = menuCardData.description;
-        const price = menuCardData.price;
-        const menuCard = new MenuCard(imgSrc, imgAlt, title, description, price);
-        menuCard.createCardElem();
-        menuCard.fillCard();
-        menuCard.insertCard(menuCardsFragment);
+    getResources('http://localhost:3000/menu').then(data => {
+        data.forEach(({img, altimg, title, descr, price}) => {
+            const menuCard = new MenuCard(img, altimg, title, descr, price);
+            menuCard.insertCard(menuCardsFragment);
+        });
+        menuFieldContainerElem.append(menuCardsFragment);
     });
-
-    menuFieldContainerElem.append(menuCardsFragment);
 
     // Формы
 
@@ -336,8 +314,21 @@ document.addEventListener('DOMContentLoaded', () => {
         }, 4000);
     };
 
-    // Отправляет форму на сервер
-    const postData = (form) => {
+    // Отправляет JSON-данные на сервер
+    const postData = async (url, data) => {
+        const res = await fetch(url, {
+            method: 'POST',
+            body: data,
+            headers: {
+                'Content-type': 'application/json'
+            }
+        });
+
+        return await res.json();
+    };
+
+    // Добавляет на форму обработчик для отправки на сервер
+    const bindPostData = (form) => {
         form.addEventListener('submit', (evt) => {
             evt.preventDefault();
 
@@ -349,25 +340,11 @@ document.addEventListener('DOMContentLoaded', () => {
             `;
             form.insertAdjacentElement('afterend', statusMessage);
 
-            
-
             let formData = new FormData(form);
-            // formData = Array.from(formData);
-            const formDataObj = {};
-            formData.forEach((value, key) => {
-                formDataObj[key] = value;
-            });
 
-            const json = JSON.stringify(formDataObj);
+            const formDataJson = JSON.stringify(Object.fromEntries(formData.entries()));
 
-            fetch('server.php', {
-                method: 'POST',
-                body: json,
-                headers: {
-                    'Content-type': 'application/json'
-                }
-            })
-            .then(data => data.text())
+            postData('http://localhost:3000/requests', formDataJson)
             .then((data) => {
                 console.log(data);
                 showThanksModal(MESSAGES.success);
@@ -384,6 +361,6 @@ document.addEventListener('DOMContentLoaded', () => {
     };
 
     forms.forEach((form) => {
-        postData(form);
+        bindPostData(form);
     });
 });

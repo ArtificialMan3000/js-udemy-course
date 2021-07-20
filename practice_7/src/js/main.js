@@ -349,27 +349,36 @@ document.addEventListener('DOMContentLoaded', () => {
             `;
             form.insertAdjacentElement('afterend', statusMessage);
 
-            const request = new XMLHttpRequest();
-            request.open('POST', 'server.php');
+            
 
-            request.setRequestHeader('Content-type', 'application/json');
             let formData = new FormData(form);
-            formData = Array.from(formData);
+            // formData = Array.from(formData);
+            const formDataObj = {};
+            formData.forEach((value, key) => {
+                formDataObj[key] = value;
+            });
 
-            const json = JSON.stringify(formData);
+            const json = JSON.stringify(formDataObj);
 
-            request.send(json);
-
-            request.addEventListener('load', () => {
-                if (request.status === 200) {
-                    console.log(request.response);
-                    showThanksModal(MESSAGES.success);
-                    form.reset();
-                    statusMessage.src = '';
-                } else {
-                    showThanksModal(MESSAGES.error);
-                    statusMessage.src = '';
+            fetch('server.php', {
+                method: 'POST',
+                body: json,
+                headers: {
+                    'Content-type': 'application/json'
                 }
+            })
+            .then(data => data.text())
+            .then((data) => {
+                console.log(data);
+                showThanksModal(MESSAGES.success);
+                statusMessage.src = '';
+            })
+            .catch(() => {
+                showThanksModal(MESSAGES.error);
+                statusMessage.src = '';
+            })
+            .finally(() => {
+                form.reset();
             });
         });
     };

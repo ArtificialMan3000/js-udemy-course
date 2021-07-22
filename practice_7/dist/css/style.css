@@ -280,6 +280,8 @@ a {
       opacity: .5;
       transition: opacity .6s ease;
       cursor: pointer; }
+      .offer__slider-dot_active {
+        opacity: 1; }
     .offer__slider-prev {
       margin-right: 10px;
       cursor: pointer; }

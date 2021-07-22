@@ -95,6 +95,10 @@
             opacity: .5;
             transition: opacity .6s ease;
             cursor: pointer;
+
+            &_active {
+                opacity: 1;
+            }
         }
         &-prev {
             margin-right: 10px;

@@ -431,6 +431,34 @@ document.addEventListener('DOMContentLoaded', () => {
     // Ширина слайдера
     const sliderWidth = window.getComputedStyle(sliderWrapperElem).width;
 
+    // Создаёт элемент навигации
+    const createNavigationElem = () => {
+        // Создаём сам элемент навигации
+        const navigationElem = document.createElement('ol');
+        navigationElem.classList.add('offer__slider-carousel-indicators');
+        // Создаём фрагмент с индикаторами слайдов
+        const slideIndicatorsFrag = document.createDocumentFragment();
+        // Заполняем фрагмент
+        slideElems.forEach((slide, index) => {
+            slideIndicatorsFrag.append(createSlideIndicator(index));
+        });
+        // Кладём фрагмент в элемент навигации
+        navigationElem.append(slideIndicatorsFrag);
+        return navigationElem;
+    };
+
+    // Создаёт индикатор слайда
+    const createSlideIndicator = (index) => {
+        const slideIndicator = document.createElement('li');
+        slideIndicator.classList.add('offer__slider-dot');
+        slideIndicator.setAttribute('data-slide', index);
+        return slideIndicator;
+    };
+
+    // Добавляем на слайдер навигацию
+    const sliderNavigationElem = createNavigationElem();
+    sliderElem.append(sliderNavigationElem);
+    
     // Устанавливает ширину "карусели"
     const setCarouselWidth = () => {
         sliderCarouselElem.style.width = 100 * slideElems.length + '%';
@@ -448,6 +476,11 @@ document.addEventListener('DOMContentLoaded', () => {
         if (slideElems && slideElems[index]) {
             slideElems[index].removeAttribute('data-active');
         }
+        // Деактивируем индикатор
+        if (sliderNavigationElem) {
+            const currSliderNavigationElem = sliderNavigationElem.querySelector(`[data-slide="${index}"]`);
+            currSliderNavigationElem.classList.remove('offer__slider-dot_active');
+        }
     };
 
     // Деактивирует все слайды
@@ -464,12 +497,17 @@ document.addEventListener('DOMContentLoaded', () => {
         if (slideElems && slideElems[index]) {
             slideElems[index].setAttribute('data-active', true);
         }
+        // Активируем индикатор
+        if (sliderNavigationElem) {
+            const currSliderNavigationElem = sliderNavigationElem.querySelector(`[data-slide="${index}"]`);
+            currSliderNavigationElem.classList.add('offer__slider-dot_active');
+        }
     };
 
     // Изменяет номер текущего слайда
     const changeCurrSlideNum = (index) => {
         if (sliderCounterCurrentElem) {
-            sliderCounterCurrentElem.textContent = setZero(index + 1);
+            sliderCounterCurrentElem.textContent = setZero(Number(index) + 1);
         }
     };
 
@@ -494,6 +532,8 @@ document.addEventListener('DOMContentLoaded', () => {
         // Меняем активный слайд
         deactivateAllSlides();
         activateSlide(index);
+        // Подсвечиваем индикатор слайда
+
         // Изменяем номер текущего слайда
         changeCurrSlideNum(index);
     };
@@ -522,6 +562,14 @@ document.addEventListener('DOMContentLoaded', () => {
         const currSlideIndex = currSlide.dataset.index;
         return Number(currSlideIndex);
     };
+
+    // Устанавливаем обработчик на навигацию для переключения слайдов
+    sliderNavigationElem.addEventListener('click', (evt) => {
+        const targetIndicator = evt.target.closest('.offer__slider-dot');
+        if (targetIndicator) {
+            switchToSlide(targetIndicator.dataset.slide);
+        }
+    });
 
     // Вешаем обработчик на кнопку "назад"
     sliderCounterPrevElem.addEventListener('click', () => {

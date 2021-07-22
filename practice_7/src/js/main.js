@@ -34,10 +34,14 @@ document.addEventListener('DOMContentLoaded', () => {
         tabheaderItemElems[index].classList.add('tabheader__item_active');
     };
 
+    // Скрываем табы
     hideTabContent();
+    // Показываем первый таб
     showTabContent();
 
+    // Вешаем обработчик на родительский элемент заголовков табов
     tabheaderItemsParentElem.addEventListener('click', (evt) => {
+        // Если клик произошёл по заголовку таба, скрываем все табы и показываем соответствующий таб
         if (evt.target && evt.target.matches('.tabheader__item')) {
             tabheaderItemElems.forEach((tabheaderItemElem, index) => {
                 if (tabheaderItemElem === evt.target) {
@@ -50,7 +54,8 @@ document.addEventListener('DOMContentLoaded', () => {
 
     // Таймер
 
-    const deadline = '2021-07-13';
+    // Целевое время
+    const DEADLINE = '2021-07-13';
 
     // Получает время оставшееся до endtime в виде объекта
     const getTimeRemaining = (endtime) => {
@@ -92,25 +97,30 @@ document.addEventListener('DOMContentLoaded', () => {
         const seconds = timer.querySelector('#seconds');
         // Обновляет время
         const updateClock = () => {
+            // Получаем время, оставшееся до целевого времени
             const time = getTimeRemaining(endtime);
 
+            // Выводим время на страницу
             days.innerHTML = setZero(time.days);
             hours.innerHTML = setZero(time.hours);
             minutes.innerHTML = setZero(time.minutes);
             seconds.innerHTML = setZero(time.seconds);
 
+            // Очищаем интервал, если целевое время достигнуто
             if (time.total <= 0) {
                 clearInterval(timerIntervalId);
             }
         };
 
+        // Устанавливаем обновление времени каждую секунду
         const timerIntervalId = setInterval(updateClock, 1000);
 
+        // Первое обновление времени
         updateClock();
-
     };
 
-    setClock('.timer', deadline);
+    // Устанавливаем таймер
+    setClock('.timer', DEADLINE);
 
     // Модальное окно
 
@@ -127,6 +137,7 @@ document.addEventListener('DOMContentLoaded', () => {
             modalElem.classList.add('modal_opened');
             // Запрещаем странице прокручиваться по вертикали
             document.body.style.overflowY = 'hidden';
+            // Очищаем таймер самостоятельного показа модального окна
             clearInterval(modalTimerId);
         }
     };
@@ -155,7 +166,7 @@ document.addEventListener('DOMContentLoaded', () => {
     if (modalElem && modalDialogElem) {
         modalElem.addEventListener('click', (evt) => {
             // Закрываем окно, если клик был вне диалоговой части
-            if (!evt.target.closest('.modal__dialog') || evt.target.getAttribute('data-close') === '') {
+            if (!evt.target.closest('.modal__dialog') || evt.target.hasAttribute('data-close')) {
                 closeModal();
             }
         });
@@ -170,6 +181,7 @@ document.addEventListener('DOMContentLoaded', () => {
         });
     }
 
+    // Устанавливаем таймаут на автоматическое открытие модального окна через 50 секунд
     const modalTimerId = setTimeout(openModal, 50000);
 
     // Обработчик прокрутки страницы
@@ -184,6 +196,8 @@ document.addEventListener('DOMContentLoaded', () => {
     window.addEventListener('scroll', windowScrollHandler);
 
     // Используем классы для создания карточек меню
+
+    // Класс карточки меню
     class MenuCard {
         constructor (imgSrc, imgAlt, title, description, price, ...classes) {
             this.imgSrc = imgSrc;
@@ -210,7 +224,9 @@ document.addEventListener('DOMContentLoaded', () => {
 
         // Создаёт пустую карточку меню
         createCardElem () {
+            // Создаём элемент
             const cardElem = document.createElement('div');
+            // Устанавливаем классы
             if (this.classes.length === 0) {
                 cardElem.classList.add(this.defaultClassName);
             } else {
@@ -218,6 +234,7 @@ document.addEventListener('DOMContentLoaded', () => {
                     cardElem.classList.add(className);
                 });
             }
+            // Записываем в элемент всю вёрстку карточки
             cardElem.innerHTML =
                 `<img>
                 <h3 class="menu__item-subtitle"></h3>
@@ -233,7 +250,7 @@ document.addEventListener('DOMContentLoaded', () => {
         // Наполняет карточку данными
         fillCard () {
             if (this.cardElem) {
-                document.body.append(this.cardElem);
+                // Устанавливаем аттрибуты и содержимое тегов
                 const imgElem = this.cardElem.querySelector('img');
                 const titleElem = this.cardElem.querySelector('.menu__item-subtitle');
                 const descrElem = this.cardElem.querySelector('.menu__item-descr');
@@ -244,6 +261,7 @@ document.addEventListener('DOMContentLoaded', () => {
                 descrElem.textContent = this.description;
                 priceNumberElem.textContent = this.price;
             } else {
+                // Если элемент карточки не создан - ошибка
                 throw new Error ('Карточки меню не существует');
             }
         }
@@ -253,6 +271,7 @@ document.addEventListener('DOMContentLoaded', () => {
             if (this.cardElem) {
                 elem.append(this.cardElem);
             } else {
+                // Если элемент карточки не создан - ошибка
                 throw new Error ('Карточки меню не существует');
             }
         }
@@ -260,30 +279,39 @@ document.addEventListener('DOMContentLoaded', () => {
 
     // Запрашивает данные с сервера
     const getResources = async (url) => {
+        // Посылаем запрос
         const res = await fetch(url);
 
+        // Если статус ответа не успешный - ошибка
         if (!res.ok) {
             throw new Error(`Could not fetch ${url}, status ${res.status}`);
         }
 
+        // Возвращаем ответ в виде JSON
         return await res.json();
     };
 
     // Контейнер карточек меню
     const menuFieldContainerElem = document.querySelector('.menu__field > .container');
+    // Фрагмент с карточками
     const menuCardsFragment = document.createDocumentFragment();
+    // Запрашиваем данные и создаём карточку
     getResources('http://localhost:3000/menu').then(data => {
         data.forEach(({img, altimg, title, descr, price}) => {
             const menuCard = new MenuCard(img, altimg, title, descr, price);
+            // Вставляем карточку во фрагмент
             menuCard.insertCard(menuCardsFragment);
         });
+        // Вставляем фрагмент на страницу
         menuFieldContainerElem.append(menuCardsFragment);
     });
 
     // Формы
 
+    // Все формы на сайте
     const forms = document.querySelectorAll('form');
 
+    // Сообщения о статусе отправки формы
     const MESSAGES = {
         loading: 'img/form/spinner.svg',
         success: 'Спасибо! Мы скоро с Вами свяжемся',
@@ -292,21 +320,28 @@ document.addEventListener('DOMContentLoaded', () => {
 
     // Показывает сообщение о результате отправки формы
     const showThanksModal = (message) => {
+        // Элемент модального окна
         const modalElem = document.querySelector('.modal');
+        // Элемент диалоговой части окна
         const prevModalDialogElem = document.querySelector('.modal__dialog');
+        // Скрываем диалоговую часть
         prevModalDialogElem.classList.add('hide');
-        openModal();
-
+        
+        // Создаём элемент для сообщения
         const thanksModal = document.createElement('div');
         thanksModal.classList.add('modal__dialog');
         thanksModal.innerHTML = `
-            <div class="modal__content">
-                <div data-close class="modal__close">&times;</div>
-                <div class="modal__title">${message}</div>
-            </div>
+        <div class="modal__content">
+        <div data-close class="modal__close">&times;</div>
+        <div class="modal__title">${message}</div>
+        </div>
         `;
-
+        // Добавляем элемент с сообщением в модальное окно
         modalElem.append(thanksModal);
+        // Открываем модалку
+        openModal();
+
+        // Через 4 секунды после показа удаляем элемент с сообщением, возвращаем диалоговую часть и закрываем окно
         setTimeout(() => {
             thanksModal.remove();
             prevModalDialogElem.classList.remove('hide');
@@ -332,6 +367,7 @@ document.addEventListener('DOMContentLoaded', () => {
         form.addEventListener('submit', (evt) => {
             evt.preventDefault();
 
+            // Показываем спиннер, пока происходит отправка данных
             const statusMessage = document.createElement('img');
             statusMessage.src = MESSAGES.loading;
             statusMessage.style.cssText = `
@@ -340,27 +376,149 @@ document.addEventListener('DOMContentLoaded', () => {
             `;
             form.insertAdjacentElement('afterend', statusMessage);
 
+            // Создаём объект FormData из формы
             let formData = new FormData(form);
-
+            // Преобразуем FormData в JSON
             const formDataJson = JSON.stringify(Object.fromEntries(formData.entries()));
 
+            // Отправляем запрос
             postData('http://localhost:3000/requests', formDataJson)
             .then((data) => {
                 console.log(data);
+                // Показываем сообщение об успехе и убираем спиннер
                 showThanksModal(MESSAGES.success);
                 statusMessage.src = '';
             })
             .catch(() => {
+                // Показываем сообщение об ошибке и убираем спиннер
                 showThanksModal(MESSAGES.error);
                 statusMessage.src = '';
             })
             .finally(() => {
+                // Очищаем форму
                 form.reset();
             });
         });
     };
 
+    // Добавляем всем формам обработчики для отправки данных
     forms.forEach((form) => {
         bindPostData(form);
     });
+
+    // Слайдер
+
+    // Элемент слайдера
+    const sliderElem = document.querySelector('.offer__slider');
+    // Элемент счётчика слайдов
+    const sliderCounterElem = sliderElem ? sliderElem.querySelector('.offer__slider-counter') : null;
+    // Контейнер слайдов
+    const sliderWrapperElem = sliderElem ? sliderElem.querySelector('.offer__slider-wrapper') : null;
+    // Стрелка "назад"
+    const sliderCounterPrevElem = sliderCounterElem ? sliderCounterElem.querySelector('.offer__slider-prev') : null;
+    // Стрелка "вперёд"
+    const sliderCounterNextElem = sliderCounterElem ? sliderCounterElem.querySelector('.offer__slider-next') : null;
+    // Элемент с номером текущего слайда
+    const sliderCounterCurrentElem = sliderCounterElem ? sliderCounterElem.querySelector('#current') : null;
+    // Элемент с номером общего количества слайдов
+    const sliderCounterTotalElem = sliderCounterElem ? sliderCounterElem.querySelector('#total') : null;
+    // Элементы слайдов
+    const slideElems = sliderWrapperElem ? sliderWrapperElem.querySelectorAll('.offer__slide') : null;
+    // Индекс стартового слайда
+    const START_SLIDE_INDEX = 0;
+
+    // Скрывает слайд
+    const hideSlide = (index) => {
+        if (slideElems && slideElems[index]) {
+            slideElems[index].classList.remove('offer__slide_active');
+        }
+    };
+
+    // Скрывает все слайды
+    const hideAllSlides = () => {
+        if (slideElems) {
+            slideElems.forEach((slide, index) => {
+                hideSlide(index);
+            });
+        }
+    };
+
+    // Показывает слайд
+    const showSlide = (index) => {
+        if (slideElems && slideElems[index]) {
+            slideElems[index].classList.add('offer__slide_active');
+        }
+    };
+
+    // Изменяет номер текущего слайда
+    const changeCurrSlideNum = (index) => {
+        if (sliderCounterCurrentElem) {
+            sliderCounterCurrentElem.textContent = setZero(index + 1);
+        }
+    };
+
+    // Выводит общее количество слайдов
+    const showSlidesTotal = () => {
+        sliderCounterTotalElem.textContent = setZero(slideElems.length);
+    };
+
+    // Проставляет индексы слайдов
+    const setSlidesIndexes = () => {
+        if (slideElems) {
+            slideElems.forEach((slide, index) => {
+                slide.setAttribute('data-index', index);
+            });
+        }
+    };
+
+    // Переключает на заданный слайд
+    const switchToSlide = (index) => {
+        hideAllSlides();
+        showSlide(index);
+        changeCurrSlideNum(index);
+    };
+
+    // Переключает на следующий слайд
+    const switchToNextSlide = (index) => {
+        let nextSlideIndex = Number(index) + 1;
+        if (nextSlideIndex >= slideElems.length) {
+            nextSlideIndex = 0;
+        }
+        switchToSlide(nextSlideIndex);
+    };
+
+    // Переключает на предыдущий слайд
+    const switchToPrevSlide = (index) => {
+        let prevSlideIndex = Number(index) - 1;
+        if (prevSlideIndex < 0) {
+            prevSlideIndex = slideElems.length - 1;
+        }
+        switchToSlide(prevSlideIndex);
+    };
+
+    // Определяет индекс активного слайда
+    const getCurrSlideIndex = () => {
+        const currSlide = sliderWrapperElem.querySelector('.offer__slide_active');
+        const currSlideIndex = currSlide.dataset.index;
+        return Number(currSlideIndex);
+    };
+
+    // Вешает обработчик на кнопку "назад"
+    sliderCounterPrevElem.addEventListener('click', () => {
+        const currSlideIndex = getCurrSlideIndex();
+        switchToPrevSlide(currSlideIndex);
+    });
+
+    // Вешает обработчик на кнопку "вперёд"
+    sliderCounterNextElem.addEventListener('click', () => {
+        const currSlideIndex = getCurrSlideIndex();
+        switchToNextSlide(currSlideIndex);
+    });
+
+    // Проставляем слайдам индексы
+    setSlidesIndexes();
+    // Выводим общее количество слайдов
+    showSlidesTotal();
+    // Переключаемся на стартовый слайд
+    switchToSlide(START_SLIDE_INDEX);
 });

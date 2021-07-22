@@ -2519,9 +2519,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
   const sliderElem = document.querySelector('.offer__slider'); // Элемент счётчика слайдов
 
-  const sliderCounterElem = sliderElem ? sliderElem.querySelector('.offer__slider-counter') : null; // Контейнер слайдов
-
-  const sliderWrapperElem = sliderElem ? sliderElem.querySelector('.offer__slider-wrapper') : null; // Стрелка "назад"
+  const sliderCounterElem = sliderElem ? sliderElem.querySelector('.offer__slider-counter') : null; // Стрелка "назад"
 
   const sliderCounterPrevElem = sliderCounterElem ? sliderCounterElem.querySelector('.offer__slider-prev') : null; // Стрелка "вперёд"
 
@@ -2529,31 +2527,49 @@ document.addEventListener('DOMContentLoaded', () => {
 
   const sliderCounterCurrentElem = sliderCounterElem ? sliderCounterElem.querySelector('#current') : null; // Элемент с номером общего количества слайдов
 
-  const sliderCounterTotalElem = sliderCounterElem ? sliderCounterElem.querySelector('#total') : null; // Элементы слайдов
+  const sliderCounterTotalElem = sliderCounterElem ? sliderCounterElem.querySelector('#total') : null; // Контейнер слайдов
+
+  const sliderWrapperElem = sliderElem ? sliderElem.querySelector('.offer__slider-wrapper') : null; // "Карусель слайдов"
+
+  const sliderCarouselElem = sliderWrapperElem ? sliderWrapperElem.querySelector('.offer__slider-carousel') : null; // Элементы слайдов
 
   const slideElems = sliderWrapperElem ? sliderWrapperElem.querySelectorAll('.offer__slide') : null; // Индекс стартового слайда
 
-  const START_SLIDE_INDEX = 0; // Скрывает слайд
+  const START_SLIDE_INDEX = 0; // Ширина слайдера
 
-  const hideSlide = index => {
+  const sliderWidth = window.getComputedStyle(sliderWrapperElem).width; // Устанавливает ширину "карусели"
+
+  const setCarouselWidth = () => {
+    sliderCarouselElem.style.width = 100 * slideElems.length + '%';
+  }; // Устанавливает всем слайдам одинаковую ширину
+
+
+  const setSlidesWidth = () => {
+    slideElems.forEach(slide => {
+      slide.style.width = sliderWidth;
+    });
+  }; // Деактивирует слайд
+
+
+  const deactivateSlide = index => {
     if (slideElems && slideElems[index]) {
-      slideElems[index].classList.remove('offer__slide_active');
+      slideElems[index].removeAttribute('data-active');
     }
-  }; // Скрывает все слайды
+  }; // Деактивирует все слайды
 
 
-  const hideAllSlides = () => {
+  const deactivateAllSlides = () => {
     if (slideElems) {
       slideElems.forEach((slide, index) => {
-        hideSlide(index);
+        deactivateSlide(index);
       });
     }
-  }; // Показывает слайд
+  }; // Активирует слайд
 
 
-  const showSlide = index => {
+  const activateSlide = index => {
     if (slideElems && slideElems[index]) {
-      slideElems[index].classList.add('offer__slide_active');
+      slideElems[index].setAttribute('data-active', true);
     }
   }; // Изменяет номер текущего слайда
 
@@ -2580,8 +2596,12 @@ document.addEventListener('DOMContentLoaded', () => {
 
 
   const switchToSlide = index => {
-    hideAllSlides();
-    showSlide(index);
+    // Прокручиваем карусель
+    sliderCarouselElem.style.transform = `translateX(-${index * parseInt(sliderWidth)}px)`; // Меняем активный слайд
+
+    deactivateAllSlides();
+    activateSlide(index); // Изменяем номер текущего слайда
+
     changeCurrSlideNum(index);
   }; // Переключает на следующий слайд
 
@@ -2609,21 +2629,25 @@ document.addEventListener('DOMContentLoaded', () => {
 
 
   const getCurrSlideIndex = () => {
-    const currSlide = sliderWrapperElem.querySelector('.offer__slide_active');
+    const currSlide = sliderWrapperElem.querySelector('[data-active]');
     const currSlideIndex = currSlide.dataset.index;
     return Number(currSlideIndex);
-  }; // Вешает обработчик на кнопку "назад"
+  }; // Вешаем обработчик на кнопку "назад"
 
 
   sliderCounterPrevElem.addEventListener('click', () => {
     const currSlideIndex = getCurrSlideIndex();
     switchToPrevSlide(currSlideIndex);
-  }); // Вешает обработчик на кнопку "вперёд"
+  }); // Вешаем обработчик на кнопку "вперёд"
 
   sliderCounterNextElem.addEventListener('click', () => {
     const currSlideIndex = getCurrSlideIndex();
     switchToNextSlide(currSlideIndex);
-  }); // Проставляем слайдам индексы
+  }); // Устанавливаем ширину "карусели"
+
+  setCarouselWidth(); // Устанавливаем ширину слайдов
+
+  setSlidesWidth(); // Проставляем слайдам индексы
 
   setSlidesIndexes(); // Выводим общее количество слайдов
 

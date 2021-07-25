@@ -52,6 +52,9 @@
                 color: #fff;
                 background-color: $primary;
             }
+            &_error {
+                border: 2px solid red;
+            }
         }
         &_medium {
             width: 743px;

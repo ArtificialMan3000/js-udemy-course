@@ -80,10 +80,10 @@ gulp.task("watch", () => {
     gulp.watch("./src/img/**/*.*", gulp.parallel("copy-assets"));
     gulp.watch("./src/**/*.{php,json}", gulp.parallel("copy-server"));
     gulp.watch("./src/scss/**/*.scss", gulp.parallel("build-sass"));
-    gulp.watch("./src/js/**/*.js", gulp.parallel("build-js"));
+    // gulp.watch("./src/js/**/*.js", gulp.parallel("build-js"));
 });
 
-gulp.task("build", gulp.parallel("copy-html", "copy-assets", "copy-server","build-sass", "build-js"));
+gulp.task("build", gulp.parallel("copy-html", "copy-assets", "copy-server","build-sass", /*"build-js"*/));
 
 gulp.task("prod", () => {
     gulp.src("./src/index.html")

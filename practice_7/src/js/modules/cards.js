@@ -1,5 +1,7 @@
 'use strict';
 
+import {getResources} from '../services/services';
+
 // Используем классы для создания карточек меню
 function cards () {
     // Класс карточки меню
@@ -82,20 +84,6 @@ function cards () {
         }
     }
 
-    // Запрашивает данные с сервера
-    const getResources = async (url) => {
-        // Посылаем запрос
-        const res = await fetch(url);
-
-        // Если статус ответа не успешный - ошибка
-        if (!res.ok) {
-            throw new Error(`Could not fetch ${url}, status ${res.status}`);
-        }
-
-        // Возвращаем ответ в виде JSON
-        return await res.json();
-    };
-
     // Контейнер карточек меню
     const menuFieldContainerElem = document.querySelector('.menu__field > .container');
     // Фрагмент с карточками
@@ -112,4 +100,4 @@ function cards () {
     });
 }
 
-module.exports = cards;
+export default cards;

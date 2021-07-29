@@ -1,9 +1,9 @@
 'use strict';
 
+import {setZero} from '../services/services';
+
 // Таймер
-function timer () {
-    // Целевое время
-    const DEADLINE = '2021-07-13';
+function timer (timerSelector, deadline) {
 
     // Получает время оставшееся до endtime в виде объекта
     const getTimeRemaining = (endtime) => {
@@ -25,15 +25,6 @@ function timer () {
             minutes,
             seconds
         };
-    };
-
-    // Добавляет ноль к числу, если оно одноциферное
-    const setZero = (num) => {
-        num = Number(num);
-        if (num >= 0 && num < 10) {
-            return `0${num}`;
-        }
-        return num;
     };
 
     // Устанавливает время на таймере
@@ -68,7 +59,7 @@ function timer () {
     };
 
     // Устанавливаем таймер
-    setClock('.timer', DEADLINE);
+    setClock(timerSelector, deadline);
 }
 
-module.exports = timer;
+export default timer;

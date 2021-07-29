@@ -1,5 +1,8 @@
 'use strict';
 
+import {openModal, closeModal} from './modal';
+import {postData} from '../services/services';
+
 // Формы
 function forms () {
     // Все формы на сайте
@@ -33,27 +36,14 @@ function forms () {
         // Добавляем элемент с сообщением в модальное окно
         modalElem.append(thanksModal);
         // Открываем модалку
-        openModal();
+        openModal('.modal');
 
         // Через 4 секунды после показа удаляем элемент с сообщением, возвращаем диалоговую часть и закрываем окно
         setTimeout(() => {
             thanksModal.remove();
             prevModalDialogElem.classList.remove('hide');
-            closeModal();
+            closeModal('.modal');
         }, 4000);
-    };
-
-    // Отправляет JSON-данные на сервер
-    const postData = async (url, data) => {
-        const res = await fetch(url, {
-            method: 'POST',
-            body: data,
-            headers: {
-                'Content-type': 'application/json'
-            }
-        });
-
-        return await res.json();
     };
 
     // Добавляет на форму обработчик для отправки на сервер
@@ -101,4 +91,4 @@ function forms () {
     });
 }
 
-module.exports = forms;
+export default forms;

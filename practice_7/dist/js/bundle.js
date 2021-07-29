@@ -90,10 +90,11 @@
 /*!********************************!*\
   !*** ./src/js/modules/calc.js ***!
   \********************************/
-/*! no static exports found */
-/***/ (function(module, exports, __webpack_require__) {
+/*! exports provided: default */
+/***/ (function(module, __webpack_exports__, __webpack_require__) {
 
 "use strict";
+__webpack_require__.r(__webpack_exports__);
 
 
 // Калькулятор калорий
@@ -248,7 +249,7 @@ function calc () {
     updateCalories();
 }
 
-module.exports = calc;
+/* harmony default export */ __webpack_exports__["default"] = (calc);
 
 /***/ }),
 
@@ -256,10 +257,14 @@ module.exports = calc;
 /*!*********************************!*\
   !*** ./src/js/modules/cards.js ***!
   \*********************************/
-/*! no static exports found */
-/***/ (function(module, exports, __webpack_require__) {
+/*! exports provided: default */
+/***/ (function(module, __webpack_exports__, __webpack_require__) {
 
 "use strict";
+__webpack_require__.r(__webpack_exports__);
+/* harmony import */ var _services_services__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ../services/services */ "./src/js/services/services.js");
+
+
 
 
 // Используем классы для создания карточек меню
@@ -344,26 +349,12 @@ function cards () {
         }
     }
 
-    // Запрашивает данные с сервера
-    const getResources = async (url) => {
-        // Посылаем запрос
-        const res = await fetch(url);
-
-        // Если статус ответа не успешный - ошибка
-        if (!res.ok) {
-            throw new Error(`Could not fetch ${url}, status ${res.status}`);
-        }
-
-        // Возвращаем ответ в виде JSON
-        return await res.json();
-    };
-
     // Контейнер карточек меню
     const menuFieldContainerElem = document.querySelector('.menu__field > .container');
     // Фрагмент с карточками
     const menuCardsFragment = document.createDocumentFragment();
     // Запрашиваем данные и создаём карточку
-    getResources('http://localhost:3000/menu').then(data => {
+    Object(_services_services__WEBPACK_IMPORTED_MODULE_0__["getResources"])('http://localhost:3000/menu').then(data => {
         data.forEach(({img, altimg, title, descr, price}) => {
             const menuCard = new MenuCard(img, altimg, title, descr, price);
             // Вставляем карточку во фрагмент
@@ -374,7 +365,8 @@ function cards () {
     });
 }
 
-module.exports = cards;
+/* harmony default export */ __webpack_exports__["default"] = (cards);
+
 
 /***/ }),
 
@@ -382,10 +374,16 @@ module.exports = cards;
 /*!*********************************!*\
   !*** ./src/js/modules/forms.js ***!
   \*********************************/
-/*! no static exports found */
-/***/ (function(module, exports, __webpack_require__) {
+/*! exports provided: default */
+/***/ (function(module, __webpack_exports__, __webpack_require__) {
 
 "use strict";
+__webpack_require__.r(__webpack_exports__);
+/* harmony import */ var _modal__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ./modal */ "./src/js/modules/modal.js");
+/* harmony import */ var _services_services__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ../services/services */ "./src/js/services/services.js");
+
+
+
 
 
 // Формы
@@ -421,27 +419,14 @@ function forms () {
         // Добавляем элемент с сообщением в модальное окно
         modalElem.append(thanksModal);
         // Открываем модалку
-        openModal();
+        Object(_modal__WEBPACK_IMPORTED_MODULE_0__["openModal"])('.modal');
 
         // Через 4 секунды после показа удаляем элемент с сообщением, возвращаем диалоговую часть и закрываем окно
         setTimeout(() => {
             thanksModal.remove();
             prevModalDialogElem.classList.remove('hide');
-            closeModal();
+            Object(_modal__WEBPACK_IMPORTED_MODULE_0__["closeModal"])('.modal');
         }, 4000);
-    };
-
-    // Отправляет JSON-данные на сервер
-    const postData = async (url, data) => {
-        const res = await fetch(url, {
-            method: 'POST',
-            body: data,
-            headers: {
-                'Content-type': 'application/json'
-            }
-        });
-
-        return await res.json();
     };
 
     // Добавляет на форму обработчик для отправки на сервер
@@ -464,7 +449,7 @@ function forms () {
             const formDataJson = JSON.stringify(Object.fromEntries(formData.entries()));
 
             // Отправляем запрос
-            postData('http://localhost:3000/requests', formDataJson)
+            Object(_services_services__WEBPACK_IMPORTED_MODULE_1__["postData"])('http://localhost:3000/requests', formDataJson)
             .then((data) => {
                 console.log(data);
                 // Показываем сообщение об успехе и убираем спиннер
@@ -489,7 +474,7 @@ function forms () {
     });
 }
 
-module.exports = forms;
+/* harmony default export */ __webpack_exports__["default"] = (forms);
 
 /***/ }),
 
@@ -497,40 +482,48 @@ module.exports = forms;
 /*!*********************************!*\
   !*** ./src/js/modules/modal.js ***!
   \*********************************/
-/*! no static exports found */
-/***/ (function(module, exports, __webpack_require__) {
+/*! exports provided: default, openModal, closeModal, modal */
+/***/ (function(module, __webpack_exports__, __webpack_require__) {
 
 "use strict";
+__webpack_require__.r(__webpack_exports__);
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "openModal", function() { return openModal; });
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "closeModal", function() { return closeModal; });
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "modal", function() { return modal; });
 
 
-// Модальное окно
-function modal () {
-    // Элемент модального окна
-    const modalElem = document.querySelector('.modal');
-    // Элемент диалоговой части модального окна
-    const modalDialogElem = document.querySelector('.modal__dialog');
-    // Кнопки вызова модального окна
-    const modalCallElems = document.querySelectorAll('[data-modal');
-
-    // Открывает модальное окно
-    const openModal = () => {
-        if (modalElem) {
-            modalElem.classList.add('modal_opened');
-            // Запрещаем странице прокручиваться по вертикали
-            document.body.style.overflowY = 'hidden';
+// Открывает модальное окно
+const openModal = (modalSelector, modalTimerId) => {
+    const modalElem = document.querySelector(modalSelector);
+    if (modalElem) {
+        modalElem.classList.add('modal_opened');
+        // Запрещаем странице прокручиваться по вертикали
+        document.body.style.overflowY = 'hidden';
+        if (modalTimerId) {
             // Очищаем таймер самостоятельного показа модального окна
             clearInterval(modalTimerId);
         }
-    };
+    }
+};
 
-    // Закрывает модальное окно
-    const closeModal = () => {
-        if (modalElem) {
-            modalElem.classList.remove('modal_opened');
-            // Разрешаем странице прокручиваться по вертикали
-            document.body.style.overflowY = '';
-        }
-    };
+// Закрывает модальное окно
+const closeModal = (modalSelector) => {
+    const modalElem = document.querySelector(modalSelector);
+    if (modalElem) {
+        modalElem.classList.remove('modal_opened');
+        // Разрешаем странице прокручиваться по вертикали
+        document.body.style.overflowY = '';
+    }
+};
+
+// Модальное окно
+function modal (triggerSelector, modalSelector, modalTimerId) {
+    // Элемент модального окна
+    const modalElem = document.querySelector(modalSelector);
+    // Элемент диалоговой части модального окна
+    const modalDialogElem = modalElem.querySelector('.modal__dialog');
+    // Кнопки вызова модального окна
+    const modalCallElems = document.querySelectorAll(triggerSelector);
 
     // Устанавливаем обработчики на кнопки вызова модального окна
     if (modalCallElems) {
@@ -538,7 +531,7 @@ function modal () {
             modalCallElem.addEventListener('click', (evt) => {
                 evt.preventDefault();
                 // Открываем окно
-                openModal();
+                openModal(modalSelector, modalTimerId);
             });
         });
     }
@@ -548,7 +541,7 @@ function modal () {
         modalElem.addEventListener('click', (evt) => {
             // Закрываем окно, если клик был вне диалоговой части
             if (!evt.target.closest('.modal__dialog') || evt.target.hasAttribute('data-close')) {
-                closeModal();
+                closeModal(modalSelector);
             }
         });
     }
@@ -557,18 +550,15 @@ function modal () {
     if (modalElem) {
         document.addEventListener('keydown', (evt) => {
             if (evt.code === 'Escape' && modalElem.classList.contains('modal_opened')) {
-                closeModal();
+                closeModal(modalSelector);
             }
         });
     }
 
-    // Устанавливаем таймаут на автоматическое открытие модального окна через 50 секунд
-    const modalTimerId = setTimeout(openModal, 50000);
-
     // Обработчик прокрутки страницы
     const windowScrollHandler = () => {
         if (window.pageYOffset + document.documentElement.clientHeight >= document.documentElement.scrollHeight) {
-            openModal();
+            openModal(modalSelector, modalTimerId);
             window.removeEventListener('scroll', windowScrollHandler);
         }
     };
@@ -577,7 +567,8 @@ function modal () {
     window.addEventListener('scroll', windowScrollHandler);
 }
 
-module.exports = modal;
+/* harmony default export */ __webpack_exports__["default"] = (modal);
+
 
 /***/ }),
 
@@ -585,32 +576,34 @@ module.exports = modal;
 /*!**********************************!*\
   !*** ./src/js/modules/slider.js ***!
   \**********************************/
-/*! no static exports found */
-/***/ (function(module, exports, __webpack_require__) {
+/*! exports provided: default */
+/***/ (function(module, __webpack_exports__, __webpack_require__) {
 
 "use strict";
+__webpack_require__.r(__webpack_exports__);
+/* harmony import */ var _services_services__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ../services/services */ "./src/js/services/services.js");
+
+
 
 
 // Слайдер
-function slider () {
+function slider ({container, slide, nextArrow, prevArrow, totalCounter, currentCounter, wrapper, carousel}) {
     // Элемент слайдера
-    const sliderElem = document.querySelector('.offer__slider');
-    // Элемент счётчика слайдов
-    const sliderCounterElem = sliderElem ? sliderElem.querySelector('.offer__slider-counter') : null;
+    const sliderElem = document.querySelector(container);
     // Стрелка "назад"
-    const sliderCounterPrevElem = sliderCounterElem ? sliderCounterElem.querySelector('.offer__slider-prev') : null;
+    const sliderCounterPrevElem = sliderElem ? sliderElem.querySelector(prevArrow) : null;
     // Стрелка "вперёд"
-    const sliderCounterNextElem = sliderCounterElem ? sliderCounterElem.querySelector('.offer__slider-next') : null;
+    const sliderCounterNextElem = sliderElem ? sliderElem.querySelector(nextArrow) : null;
     // Элемент с номером текущего слайда
-    const sliderCounterCurrentElem = sliderCounterElem ? sliderCounterElem.querySelector('#current') : null;
+    const sliderCounterCurrentElem = sliderElem ? sliderElem.querySelector(currentCounter) : null;
     // Элемент с номером общего количества слайдов
-    const sliderCounterTotalElem = sliderCounterElem ? sliderCounterElem.querySelector('#total') : null;
+    const sliderCounterTotalElem = sliderElem ? sliderElem.querySelector(totalCounter) : null;
     // Контейнер слайдов
-    const sliderWrapperElem = sliderElem ? sliderElem.querySelector('.offer__slider-wrapper') : null;
+    const sliderWrapperElem = sliderElem ? sliderElem.querySelector(wrapper) : null;
     // "Карусель слайдов"
-    const sliderCarouselElem = sliderWrapperElem ? sliderWrapperElem.querySelector('.offer__slider-carousel') : null;
+    const sliderCarouselElem = sliderWrapperElem ? sliderWrapperElem.querySelector(carousel) : null;
     // Элементы слайдов
-    const slideElems = sliderWrapperElem ? sliderWrapperElem.querySelectorAll('.offer__slide') : null;
+    const slideElems = sliderWrapperElem ? sliderWrapperElem.querySelectorAll(slide) : null;
     // Индекс стартового слайда
     const START_SLIDE_INDEX = 0;
     // Ширина слайдера
@@ -692,13 +685,13 @@ function slider () {
     // Изменяет номер текущего слайда
     const changeCurrSlideNum = (index) => {
         if (sliderCounterCurrentElem) {
-            sliderCounterCurrentElem.textContent = setZero(Number(index) + 1);
+            sliderCounterCurrentElem.textContent = Object(_services_services__WEBPACK_IMPORTED_MODULE_0__["setZero"])(Number(index) + 1);
         }
     };
 
     // Выводит общее количество слайдов
     const showSlidesTotal = () => {
-        sliderCounterTotalElem.textContent = setZero(slideElems.length);
+        sliderCounterTotalElem.textContent = Object(_services_services__WEBPACK_IMPORTED_MODULE_0__["setZero"])(slideElems.length);
     };
 
     // Проставляет индексы слайдов
@@ -780,7 +773,7 @@ function slider () {
     switchToSlide(START_SLIDE_INDEX);
 }
 
-module.exports = slider;
+/* harmony default export */ __webpack_exports__["default"] = (slider);
 
 /***/ }),
 
@@ -788,41 +781,42 @@ module.exports = slider;
 /*!********************************!*\
   !*** ./src/js/modules/tabs.js ***!
   \********************************/
-/*! no static exports found */
-/***/ (function(module, exports, __webpack_require__) {
+/*! exports provided: default */
+/***/ (function(module, __webpack_exports__, __webpack_require__) {
 
 "use strict";
+__webpack_require__.r(__webpack_exports__);
 
 
 // Табы
-function tabs () {
+function tabs (tabsSelector, tabsContentSelector, tabsParentSelector, tabsActiveClass, tabsContentHideClass) {
     // Заголовоки табов
-    const tabheaderItemElems = document.querySelectorAll('.tabheader__item'),
+    const tabheaderItemElems = document.querySelectorAll(tabsSelector),
         // Содержимое табов
-        tabcontentElems = document.querySelectorAll('.tabcontent'),
+        tabcontentElems = document.querySelectorAll(tabsContentSelector),
         // Родительский элемент заголовков табов
-        tabheaderItemsParentElem = document.querySelector('.tabheader__items');
+        tabheaderItemsParentElem = document.querySelector(tabsParentSelector);
 
     // Скрывает все табы
     const hideTabContent = () => {
         // Скрываем всё содержимое табов
         tabcontentElems.forEach((tabcontentElem) => {
-            tabcontentElem.classList.add('tabcontent_hide');
+            tabcontentElem.classList.add(tabsContentHideClass);
             tabcontentElem.classList.remove('fade');
         });
         // Деактивируем все заголовки табов
         tabheaderItemElems.forEach((tabheaderItemElem) => {
-            tabheaderItemElem.classList.remove('tabheader__item_active');
+            tabheaderItemElem.classList.remove(tabsActiveClass);
         });
     };
 
     // Показывает таб
     const showTabContent = (index = 0) => {
         // Показываем содержимое таба
-        tabcontentElems[index].classList.remove('tabcontent_hide');
+        tabcontentElems[index].classList.remove(tabsContentHideClass);
         tabcontentElems[index].classList.add('fade');
         // Активируем заголовок таба
-        tabheaderItemElems[index].classList.add('tabheader__item_active');
+        tabheaderItemElems[index].classList.add(tabsActiveClass);
     };
 
     // Скрываем табы
@@ -833,7 +827,7 @@ function tabs () {
     // Вешаем обработчик на родительский элемент заголовков табов
     tabheaderItemsParentElem.addEventListener('click', (evt) => {
         // Если клик произошёл по заголовку таба, скрываем все табы и показываем соответствующий таб
-        if (evt.target && evt.target.matches('.tabheader__item')) {
+        if (evt.target && evt.target.matches(tabsSelector)) {
             tabheaderItemElems.forEach((tabheaderItemElem, index) => {
                 if (tabheaderItemElem === evt.target) {
                     hideTabContent();
@@ -844,7 +838,7 @@ function tabs () {
     });
 }
 
-module.exports = tabs;
+/* harmony default export */ __webpack_exports__["default"] = (tabs);
 
 /***/ }),
 
@@ -852,16 +846,18 @@ module.exports = tabs;
 /*!*********************************!*\
   !*** ./src/js/modules/timer.js ***!
   \*********************************/
-/*! no static exports found */
-/***/ (function(module, exports, __webpack_require__) {
+/*! exports provided: default */
+/***/ (function(module, __webpack_exports__, __webpack_require__) {
 
 "use strict";
+__webpack_require__.r(__webpack_exports__);
+/* harmony import */ var _services_services__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ../services/services */ "./src/js/services/services.js");
+
+
 
 
 // Таймер
-function timer () {
-    // Целевое время
-    const DEADLINE = '2021-07-13';
+function timer (timerSelector, deadline) {
 
     // Получает время оставшееся до endtime в виде объекта
     const getTimeRemaining = (endtime) => {
@@ -885,15 +881,6 @@ function timer () {
         };
     };
 
-    // Добавляет ноль к числу, если оно одноциферное
-    const setZero = (num) => {
-        num = Number(num);
-        if (num >= 0 && num < 10) {
-            return `0${num}`;
-        }
-        return num;
-    };
-
     // Устанавливает время на таймере
     const setClock = (selector, endtime) => {
         const timer = document.querySelector(selector);
@@ -907,10 +894,10 @@ function timer () {
             const time = getTimeRemaining(endtime);
 
             // Выводим время на страницу
-            days.innerHTML = setZero(time.days);
-            hours.innerHTML = setZero(time.hours);
-            minutes.innerHTML = setZero(time.minutes);
-            seconds.innerHTML = setZero(time.seconds);
+            days.innerHTML = Object(_services_services__WEBPACK_IMPORTED_MODULE_0__["setZero"])(time.days);
+            hours.innerHTML = Object(_services_services__WEBPACK_IMPORTED_MODULE_0__["setZero"])(time.hours);
+            minutes.innerHTML = Object(_services_services__WEBPACK_IMPORTED_MODULE_0__["setZero"])(time.minutes);
+            seconds.innerHTML = Object(_services_services__WEBPACK_IMPORTED_MODULE_0__["setZero"])(time.seconds);
 
             // Очищаем интервал, если целевое время достигнуто
             if (time.total <= 0) {
@@ -926,10 +913,10 @@ function timer () {
     };
 
     // Устанавливаем таймер
-    setClock('.timer', DEADLINE);
+    setClock(timerSelector, deadline);
 }
 
-module.exports = timer;
+/* harmony default export */ __webpack_exports__["default"] = (timer);
 
 /***/ }),
 
@@ -937,30 +924,105 @@ module.exports = timer;
 /*!**************************!*\
   !*** ./src/js/script.js ***!
   \**************************/
-/*! no static exports found */
-/***/ (function(module, exports, __webpack_require__) {
+/*! no exports provided */
+/***/ (function(module, __webpack_exports__, __webpack_require__) {
 
 "use strict";
+__webpack_require__.r(__webpack_exports__);
+/* harmony import */ var _modules_tabs__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ./modules/tabs */ "./src/js/modules/tabs.js");
+/* harmony import */ var _modules_modal__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ./modules/modal */ "./src/js/modules/modal.js");
+/* harmony import */ var _modules_timer__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ./modules/timer */ "./src/js/modules/timer.js");
+/* harmony import */ var _modules_cards__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! ./modules/cards */ "./src/js/modules/cards.js");
+/* harmony import */ var _modules_calc__WEBPACK_IMPORTED_MODULE_4__ = __webpack_require__(/*! ./modules/calc */ "./src/js/modules/calc.js");
+/* harmony import */ var _modules_forms__WEBPACK_IMPORTED_MODULE_5__ = __webpack_require__(/*! ./modules/forms */ "./src/js/modules/forms.js");
+/* harmony import */ var _modules_slider__WEBPACK_IMPORTED_MODULE_6__ = __webpack_require__(/*! ./modules/slider */ "./src/js/modules/slider.js");
+
+
+
+
+
+
+
+
+
 
 
 // Скрипт начнёт выполняться после полной загрузки контента
 document.addEventListener('DOMContentLoaded', () => {
-    const tabs = __webpack_require__(/*! ./modules/tabs */ "./src/js/modules/tabs.js");
-    const modal = __webpack_require__(/*! ./modules/modal */ "./src/js/modules/modal.js");
-    const timer = __webpack_require__(/*! ./modules/timer */ "./src/js/modules/timer.js");
-    const cards = __webpack_require__(/*! ./modules/cards */ "./src/js/modules/cards.js");
-    const calc = __webpack_require__(/*! ./modules/calc */ "./src/js/modules/calc.js");
-    const forms = __webpack_require__(/*! ./modules/forms */ "./src/js/modules/forms.js");
-    const slider = __webpack_require__(/*! ./modules/slider */ "./src/js/modules/slider.js");
-
-    tabs();
-    modal();
-    timer();
-    cards();
-    calc();
-    forms();
-    slider();
+    // Устанавливаем таймаут на автоматическое открытие модального окна через 50 секунд
+    const modalTimerId = setTimeout(() => Object(_modules_modal__WEBPACK_IMPORTED_MODULE_1__["openModal"])('.modal', modalTimerId), 50000);
+    Object(_modules_tabs__WEBPACK_IMPORTED_MODULE_0__["default"])('.tabheader__item', '.tabcontent', '.tabheader__items', 'tabheader__item_active', 'tabcontent_hide');
+    Object(_modules_modal__WEBPACK_IMPORTED_MODULE_1__["default"])('[data-modal]', '.modal', modalTimerId);
+    Object(_modules_timer__WEBPACK_IMPORTED_MODULE_2__["default"])('.timer', '2021-08-13');
+    Object(_modules_cards__WEBPACK_IMPORTED_MODULE_3__["default"])();
+    Object(_modules_calc__WEBPACK_IMPORTED_MODULE_4__["default"])();
+    Object(_modules_forms__WEBPACK_IMPORTED_MODULE_5__["default"])();
+    Object(_modules_slider__WEBPACK_IMPORTED_MODULE_6__["default"])({
+        container: '.offer__slider',
+        slide: '.offer__slide',
+        nextArrow: '.offer__slider-next',
+        prevArrow: '.offer__slider-prev',
+        totalCounter: '#total',
+        currentCounter: '#current',
+        wrapper: '.offer__slider-wrapper',
+        carousel: '.offer__slider-carousel'
+    });
 });
+
+/***/ }),
+
+/***/ "./src/js/services/services.js":
+/*!*************************************!*\
+  !*** ./src/js/services/services.js ***!
+  \*************************************/
+/*! exports provided: setZero, postData, getResources */
+/***/ (function(module, __webpack_exports__, __webpack_require__) {
+
+"use strict";
+__webpack_require__.r(__webpack_exports__);
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "setZero", function() { return setZero; });
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "postData", function() { return postData; });
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "getResources", function() { return getResources; });
+
+
+// Добавляет ноль к числу, если оно одноциферное
+const setZero = (num) => {
+    num = Number(num);
+    if (num >= 0 && num < 10) {
+        return `0${num}`;
+    }
+    return num;
+};
+
+// Отправляет JSON-данные на сервер
+const postData = async (url, data) => {
+    const res = await fetch(url, {
+        method: 'POST',
+        body: data,
+        headers: {
+            'Content-type': 'application/json'
+        }
+    });
+
+    return await res.json();
+};
+
+// Запрашивает данные с сервера
+const getResources = async (url) => {
+    // Посылаем запрос
+    const res = await fetch(url);
+
+    // Если статус ответа не успешный - ошибка
+    if (!res.ok) {
+        throw new Error(`Could not fetch ${url}, status ${res.status}`);
+    }
+
+    // Возвращаем ответ в виде JSON
+    return await res.json();
+};
+
+
+
 
 /***/ })
 

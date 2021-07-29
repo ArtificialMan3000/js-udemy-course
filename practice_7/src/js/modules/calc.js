@@ -152,4 +152,4 @@ function calc () {
     updateCalories();
 }
 
-module.exports = calc;
+export default calc;

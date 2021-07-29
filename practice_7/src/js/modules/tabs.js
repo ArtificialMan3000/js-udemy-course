@@ -1,34 +1,34 @@
 'use strict';
 
 // Табы
-function tabs () {
+function tabs (tabsSelector, tabsContentSelector, tabsParentSelector, tabsActiveClass, tabsContentHideClass) {
     // Заголовоки табов
-    const tabheaderItemElems = document.querySelectorAll('.tabheader__item'),
+    const tabheaderItemElems = document.querySelectorAll(tabsSelector),
         // Содержимое табов
-        tabcontentElems = document.querySelectorAll('.tabcontent'),
+        tabcontentElems = document.querySelectorAll(tabsContentSelector),
         // Родительский элемент заголовков табов
-        tabheaderItemsParentElem = document.querySelector('.tabheader__items');
+        tabheaderItemsParentElem = document.querySelector(tabsParentSelector);
 
     // Скрывает все табы
     const hideTabContent = () => {
         // Скрываем всё содержимое табов
         tabcontentElems.forEach((tabcontentElem) => {
-            tabcontentElem.classList.add('tabcontent_hide');
+            tabcontentElem.classList.add(tabsContentHideClass);
             tabcontentElem.classList.remove('fade');
         });
         // Деактивируем все заголовки табов
         tabheaderItemElems.forEach((tabheaderItemElem) => {
-            tabheaderItemElem.classList.remove('tabheader__item_active');
+            tabheaderItemElem.classList.remove(tabsActiveClass);
         });
     };
 
     // Показывает таб
     const showTabContent = (index = 0) => {
         // Показываем содержимое таба
-        tabcontentElems[index].classList.remove('tabcontent_hide');
+        tabcontentElems[index].classList.remove(tabsContentHideClass);
         tabcontentElems[index].classList.add('fade');
         // Активируем заголовок таба
-        tabheaderItemElems[index].classList.add('tabheader__item_active');
+        tabheaderItemElems[index].classList.add(tabsActiveClass);
     };
 
     // Скрываем табы
@@ -39,7 +39,7 @@ function tabs () {
     // Вешаем обработчик на родительский элемент заголовков табов
     tabheaderItemsParentElem.addEventListener('click', (evt) => {
         // Если клик произошёл по заголовку таба, скрываем все табы и показываем соответствующий таб
-        if (evt.target && evt.target.matches('.tabheader__item')) {
+        if (evt.target && evt.target.matches(tabsSelector)) {
             tabheaderItemElems.forEach((tabheaderItemElem, index) => {
                 if (tabheaderItemElem === evt.target) {
                     hideTabContent();
@@ -50,4 +50,4 @@ function tabs () {
     });
 }
 
-module.exports = tabs;
+export default tabs;

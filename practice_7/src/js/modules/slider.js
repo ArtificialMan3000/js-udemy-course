@@ -1,25 +1,25 @@
 'use strict';
 
+import {setZero} from '../services/services';
+
 // Слайдер
-function slider () {
+function slider ({container, slide, nextArrow, prevArrow, totalCounter, currentCounter, wrapper, carousel}) {
     // Элемент слайдера
-    const sliderElem = document.querySelector('.offer__slider');
-    // Элемент счётчика слайдов
-    const sliderCounterElem = sliderElem ? sliderElem.querySelector('.offer__slider-counter') : null;
+    const sliderElem = document.querySelector(container);
     // Стрелка "назад"
-    const sliderCounterPrevElem = sliderCounterElem ? sliderCounterElem.querySelector('.offer__slider-prev') : null;
+    const sliderCounterPrevElem = sliderElem ? sliderElem.querySelector(prevArrow) : null;
     // Стрелка "вперёд"
-    const sliderCounterNextElem = sliderCounterElem ? sliderCounterElem.querySelector('.offer__slider-next') : null;
+    const sliderCounterNextElem = sliderElem ? sliderElem.querySelector(nextArrow) : null;
     // Элемент с номером текущего слайда
-    const sliderCounterCurrentElem = sliderCounterElem ? sliderCounterElem.querySelector('#current') : null;
+    const sliderCounterCurrentElem = sliderElem ? sliderElem.querySelector(currentCounter) : null;
     // Элемент с номером общего количества слайдов
-    const sliderCounterTotalElem = sliderCounterElem ? sliderCounterElem.querySelector('#total') : null;
+    const sliderCounterTotalElem = sliderElem ? sliderElem.querySelector(totalCounter) : null;
     // Контейнер слайдов
-    const sliderWrapperElem = sliderElem ? sliderElem.querySelector('.offer__slider-wrapper') : null;
+    const sliderWrapperElem = sliderElem ? sliderElem.querySelector(wrapper) : null;
     // "Карусель слайдов"
-    const sliderCarouselElem = sliderWrapperElem ? sliderWrapperElem.querySelector('.offer__slider-carousel') : null;
+    const sliderCarouselElem = sliderWrapperElem ? sliderWrapperElem.querySelector(carousel) : null;
     // Элементы слайдов
-    const slideElems = sliderWrapperElem ? sliderWrapperElem.querySelectorAll('.offer__slide') : null;
+    const slideElems = sliderWrapperElem ? sliderWrapperElem.querySelectorAll(slide) : null;
     // Индекс стартового слайда
     const START_SLIDE_INDEX = 0;
     // Ширина слайдера
@@ -189,4 +189,4 @@ function slider () {
     switchToSlide(START_SLIDE_INDEX);
 }
 
-module.exports = slider;
+export default slider;

@@ -15,11 +15,11 @@ gulp.task("copy-html", () => {
 });
 
 gulp.task("build-js", () => {
-    return gulp.src("./src/js/main.js")
+    return gulp.src("./src/js/script.js")
                 .pipe(webpack({
                     mode: 'development',
                     output: {
-                        filename: 'script.js'
+                        filename: 'bundle.js'
                     },
                     watch: false,
                     devtool: "source-map",
@@ -80,10 +80,10 @@ gulp.task("watch", () => {
     gulp.watch("./src/img/**/*.*", gulp.parallel("copy-assets"));
     gulp.watch("./src/**/*.{php,json}", gulp.parallel("copy-server"));
     gulp.watch("./src/scss/**/*.scss", gulp.parallel("build-sass"));
-    // gulp.watch("./src/js/**/*.js", gulp.parallel("build-js"));
+    gulp.watch("./src/js/**/*.js", gulp.parallel("build-js"));
 });
 
-gulp.task("build", gulp.parallel("copy-html", "copy-assets", "copy-server","build-sass", /*"build-js"*/));
+gulp.task("build", gulp.parallel("copy-html", "copy-assets", "copy-server","build-sass", "build-js"));
 
 gulp.task("prod", () => {
     gulp.src("./src/index.html")
@@ -93,11 +93,11 @@ gulp.task("prod", () => {
     gulp.src("./src/icons/**/*.*")
         .pipe(gulp.dest(dist + "/icons"));
 
-    gulp.src("./src/js/main.js")
+    gulp.src("./src/js/script.js")
         .pipe(webpack({
             mode: 'production',
             output: {
-                filename: 'script.js'
+                filename: 'bundle.js'
             },
             module: {
                 rules: [

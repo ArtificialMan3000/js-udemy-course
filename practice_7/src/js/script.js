@@ -1,4 +1,6 @@
 'use strict';
+require('es6-promise').polyfill();
+require('nodelist-foreach-polyfill');
 
 import tabs from './modules/tabs';
 import modal from './modules/modal';
@@ -11,6 +13,7 @@ import slider from './modules/slider';
 
 // Скрипт начнёт выполняться после полной загрузки контента
 document.addEventListener('DOMContentLoaded', () => {
+    
     // Устанавливаем таймаут на автоматическое открытие модального окна через 50 секунд
     const modalTimerId = setTimeout(() => openModal('.modal', modalTimerId), 50000);
     tabs('.tabheader__item', '.tabcontent', '.tabheader__items', 'tabheader__item_active', 'tabcontent_hide');
@@ -30,3 +33,5 @@ document.addEventListener('DOMContentLoaded', () => {
         carousel: '.offer__slider-carousel'
     });
 });
+
+
